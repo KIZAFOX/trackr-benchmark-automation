@@ -1,0 +1,28 @@
+name: Update Match-V5 benchmarks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 8 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benchmark-refresh
+  cancel-in-progress: false
+
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generate and publish benchmarks
+        run: node publish-benchmarks.js
+        env:
+          RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
